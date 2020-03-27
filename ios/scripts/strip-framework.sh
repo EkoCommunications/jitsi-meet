@@ -3,8 +3,8 @@
 
 cd "${BUILT_PRODUCTS_DIR}/${FRAMEWORKS_FOLDER_PATH}"
 
-frameworks=("Jitsi")
-input_files=("${SCRIPT_INPUT_FILE_0}")
+frameworks=("JitsiMeet" "WebRTC")
+input_files=("${SCRIPT_INPUT_FILE_0}" "${SCRIPT_INPUT_FILE_1}")
 
 # Signs a binary with the provided identity
 codesign() {
