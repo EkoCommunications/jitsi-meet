@@ -39,3 +39,7 @@ lipo -create -output "${OUTPUT_DIR}/JitsiMeet.framework/JitsiMeet" "${OUTPUT_DIR
 # Copy the Swift module mappings for the simulator into the
 # framework. The device mappings already exist from step 6.
 cp -r "${OUTPUT_DIR}/Build/Products/Release-iphonesimulator/JitsiMeet.framework/Modules/JitsiMeet.swiftmodule/" "${OUTPUT_DIR}/JitsiMeet.framework/Modules/JitsiMeet.swiftmodule"
+# 9
+# Embedded strip-framework.sh into the framework
+echo "${THIS_DIR}"
+cp -r "${THIS_DIR}/strip-framework.sh" "${OUTPUT_DIR}/JitsiMeet.framework"
