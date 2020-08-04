@@ -23,7 +23,6 @@
 #import "RCTBridgeWrapper.h"
 #import "ReactUtils.h"
 
-#import <RNGoogleSignin/RNGoogleSignin.h>
 #import <WebRTC/RTCLogging.h>
 
 
@@ -91,12 +90,6 @@
             options:(NSDictionary<UIApplicationOpenURLOptionsKey,id> *)options {
 
     if ([Dropbox application:app openURL:url options:options]) {
-        return YES;
-    }
-
-    if ([RNGoogleSignin application:app
-                            openURL:url
-                            options:options]) {
         return YES;
     }
 
