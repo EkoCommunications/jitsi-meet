@@ -43,3 +43,13 @@ cp -r "${OUTPUT_DIR}/Build/Products/Release-iphonesimulator/JitsiMeet.framework/
 # Embedded strip-framework.sh into the framework
 echo "${THIS_DIR}"
 cp -r "${THIS_DIR}/strip-framework.sh" "${OUTPUT_DIR}/JitsiMeet.framework"
+# 10
+# Copy JitsiMeet.framework.dSYM to output folder
+cp -r "${OUTPUT_DIR}/Build/Products/Release-iphoneos/JitsiMeet.framework.dSYM" "${OUTPUT_DIR}/JitsiMeet.framework.dSYM"
+# 11
+# Download WebRTC.dSYM
+bash "${PROJECT_REPO}/node_modules/react-native-webrtc/tools/downloadBitcode.sh"
+# 12
+# Move WebRTC.framework/WebRTC.dSYM to output folder
+cp -r "${PROJECT_REPO}/node_modules/react-native-webrtc/ios/WebRTC.framework" "${OUTPUT_DIR}/WebRTC.framework"
+cp -r "${PROJECT_REPO}/node_modules/react-native-webrtc/ios/WebRTC.dSYM" "${OUTPUT_DIR}/WebRTC.dSYM"
