@@ -16,64 +16,9 @@
 
 #import "JitsiMeetBaseLogHandler+Private.h"
 
-@interface PrivateLogger : DDAbstractLogger <DDLogger>
-@end
-
-@implementation PrivateLogger {
-    JitsiMeetBaseLogHandler *_delegate;
-}
-
-- (instancetype)initWithDelegate:(JitsiMeetBaseLogHandler *)delegate {
-    if (self = [super init]) {
-        _delegate = delegate;
-    }
-
-    return self;
-}
-
-#pragma mark - DDAbstractLogger interface
-
-- (void)logMessage:(DDLogMessage *)logMessage {
-    NSString *logMsg = logMessage.message;
-    
-    if (_logFormatter)
-        logMsg = [_logFormatter formatLogMessage:logMessage];
-    
-    if (logMsg && _delegate) {
-        switch (logMessage.flag) {
-            case DDLogFlagError:
-                [_delegate logError:logMsg];
-                break;
-            case DDLogFlagWarning:
-                [_delegate logWarn:logMsg];
-                break;
-            case DDLogFlagInfo:
-                [_delegate logInfo:logMsg];
-                break;
-            case DDLogFlagDebug:
-                [_delegate logDebug:logMsg];
-                break;
-            case DDLogFlagVerbose:
-                [_delegate logVerbose:logMsg];
-                break;
-        }
-    }
-}
-
-@end
-
-
 @implementation JitsiMeetBaseLogHandler
 
 #pragma mark - Proxy logger not to expose the CocoaLumberjack headers
-
-- (instancetype)init {
-    if (self = [super init]) {
-        self.logger = [[PrivateLogger alloc] initWithDelegate:self];
-    }
-
-    return self;
-}
 
 #pragma mark - Public API
 

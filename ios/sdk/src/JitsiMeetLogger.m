@@ -27,16 +27,14 @@
 __attribute__((constructor))
 static void initializeLogger() {
     NSString *mainBundleId = [NSBundle mainBundle].bundleIdentifier;
-    DDOSLogger *osLogger = [[DDOSLogger alloc] initWithSubsystem:mainBundleId category:@"JitsiMeetSDK"];
-    [DDLog addLogger:osLogger];
 }
 
 + (void)addHandler:(JitsiMeetBaseLogHandler *)handler {
-    [DDLog addLogger:handler.logger];
+    
 }
 
 + (void)removeHandler:(JitsiMeetBaseLogHandler *)handler {
-    [DDLog removeLogger:handler.logger];
+    
 }
 
 @end

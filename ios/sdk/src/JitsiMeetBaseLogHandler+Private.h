@@ -19,6 +19,6 @@
 
 @interface JitsiMeetBaseLogHandler ()
 
-@property (nonatomic, retain) id<DDLogger> logger;
+@property (nonatomic, retain) id logger;
 
 @end

@@ -169,7 +169,7 @@ RCT_EXPORT_METHOD(setMode:(int)mode
 RCT_EXPORT_METHOD(setAudioDevice:(NSString *)device
                   resolve:(RCTPromiseResolveBlock)resolve
                   reject:(RCTPromiseRejectBlock)reject) {
-    DDLogInfo(@"[AudioMode] Selected device: %@", device);
+    NSLog(@"[AudioMode] Selected device: %@", device);
     
     RTCAudioSession *session = [RTCAudioSession sharedInstance];
     [session lockForConfiguration];
@@ -262,7 +262,7 @@ RCT_EXPORT_METHOD(updateDeviceList) {
         // This is to play well with other components which could be integrated
         // into the final application.
         if (self->activeMode != kAudioModeDefault) {
-            DDLogInfo(@"[AudioMode] Route changed, reapplying RTCAudioSession config");
+            NSLog(@"[AudioMode] Route changed, reapplying RTCAudioSession config");
             RTCAudioSessionConfiguration *config = [self configForMode:self->activeMode];
             [self setConfig:config error:nil];
             if (self->forceSpeaker && !self->isSpeakerOn) {
@@ -276,7 +276,7 @@ RCT_EXPORT_METHOD(updateDeviceList) {
 }
 
 - (void)audioSession:(RTCAudioSession *)audioSession didSetActive:(BOOL)active {
-    DDLogInfo(@"[AudioMode] Audio session didSetActive:%d", active);
+    NSLog(@"[AudioMode] Audio session didSetActive:%d", active);
 }
 
 #pragma mark - Helper methods

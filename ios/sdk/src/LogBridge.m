@@ -31,27 +31,27 @@ RCT_EXPORT_MODULE();
 }
 
 RCT_EXPORT_METHOD(trace:(NSString *)msg) {
-    DDLogDebug(@"%@", msg);
+    NSLog(@"Trace | %@", msg);
 }
 
 RCT_EXPORT_METHOD(debug:(NSString *)msg) {
-    DDLogDebug(@"%@", msg);
+    NSLog(@"Debug | %@", msg);
 }
 
 RCT_EXPORT_METHOD(info:(NSString *)msg) {
-    DDLogInfo(@"%@", msg);
+    NSLog(@"Info | %@", msg);
 }
 
 RCT_EXPORT_METHOD(log:(NSString *)msg) {
-    DDLogInfo(@"%@", msg);
+    NSLog(@"Log | %@", msg);
 }
 
 RCT_EXPORT_METHOD(warn:(NSString *)msg) {
-    DDLogWarn(@"%@", msg);
+    NSLog(@"Warn | %@", msg);
 }
 
 RCT_EXPORT_METHOD(error:(NSString *)msg) {
-    DDLogError(@"%@", msg);
+    NSLog(@"Error | %@", msg);
 }
 
 @end

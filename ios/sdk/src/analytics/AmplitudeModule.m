@@ -52,7 +52,7 @@ RCT_EXPORT_METHOD(logEvent:(NSString*)instanceName eventType:(NSString*)eventTyp
                                                                    options:NSJSONReadingMutableContainers
                                                                      error:&error];
     if (eventProperties == nil) {
-        DDLogError(@"[Amplitude] Error parsing event properties: %@", error);
+        NSLog(@"[Amplitude] Error parsing event properties: %@", error);
     } else {
         [[Amplitude instanceWithName:instanceName] logEvent:eventType withEventProperties:eventProperties];
     }

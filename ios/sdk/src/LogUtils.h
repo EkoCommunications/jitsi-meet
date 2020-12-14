@@ -17,7 +17,4 @@
 #ifndef JM_LOG_UTILS_H
 #define JM_LOG_UTILS_H
 
-#import <CocoaLumberjack/CocoaLumberjack.h>
-static const DDLogLevel ddLogLevel = DDLogLevelVerbose;
-
 #endif
