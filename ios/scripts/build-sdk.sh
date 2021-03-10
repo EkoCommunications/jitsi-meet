@@ -15,41 +15,38 @@ OUTPUT_DIR="${PROJECT_REPO}/ios/build"
 if [ -d "${OUTPUT_DIR}" ]; then
 rm -rf "${OUTPUT_DIR}"
 fi
-# 4
-# Build the framework for device and for simulator (using
-# all needed architectures).
 
-xcodebuild -workspace ios/jitsi-meet.xcworkspace -scheme JitsiMeet -configuration Release -arch arm64 only_active_arch=no defines_module=yes -sdk "iphoneos" -derivedDataPath "${OUTPUT_DIR}" ENABLE_BITCODE=YES OTHER_CFLAGS="-fembed-bitcode" BITCODE_GENERATION_MODE=bitcode
-xcodebuild -workspace ios/jitsi-meet.xcworkspace -scheme JitsiMeet -configuration Release -arch x86_64 only_active_arch=no defines_module=yes -sdk "iphonesimulator" -derivedDataPath "${OUTPUT_DIR}" ENABLE_BITCODE=YES OTHER_CFLAGS="-fembed-bitcode" BITCODE_GENERATION_MODE=bitcode
+mkdir "${OUTPUT_DIR}"
+
+# 4
+# Build the all archives architectures for device and for simulator
+xcodebuild archive -workspace ios/jitsi-meet.xcworkspace -scheme JitsiMeet -configuration Release -arch arm64 only_active_arch=no defines_module=yes -sdk "iphoneos" -archivePath "${OUTPUT_DIR}/JitsiMeet-iphoneos.xcarchive" ENABLE_BITCODE=YES OTHER_CFLAGS="-fembed-bitcode" BITCODE_GENERATION_MODE=bitcode SKIP_INSTALL=NO
+xcodebuild archive -workspace ios/jitsi-meet.xcworkspace -scheme JitsiMeet -configuration Release -arch x86_64 only_active_arch=no defines_module=yes -sdk "iphonesimulator" -archivePath "${OUTPUT_DIR}/JitsiMeet-iphonesimulator.xcarchive" ENABLE_BITCODE=YES OTHER_CFLAGS="-fembed-bitcode" BITCODE_GENERATION_MODE=bitcode SKIP_INSTALL=NO
 
 # 5
-# Remove .framework file if exists from previous run.
-if [ -d "${OUTPUT_DIR}/JitsiMeet.framework" ]; then
-rm -rf "${OUTPUT_DIR}/JitsiMeet.framework"
-fi
+# Build xcframework
+xcodebuild -create-xcframework -framework "${OUTPUT_DIR}/JitsiMeet-iphoneos.xcarchive/Products/Library/Frameworks/JitsiMeet.framework" -framework "${OUTPUT_DIR}/JitsiMeet-iphonesimulator.xcarchive/Products/Library/Frameworks/JitsiMeet.framework" -output "${OUTPUT_DIR}/JitsiMeet.xcframework"
+
 # 6
-# Copy the device version of framework.
-cp -r "${OUTPUT_DIR}/Build/Products/Release-iphoneos/JitsiMeet.framework" "${OUTPUT_DIR}/JitsiMeet.framework"
-# 7
-# Replace the framework executable within the framework with
-# a new version created by merging the device and simulator
-# frameworks' executables with lipo.
-lipo -create -output "${OUTPUT_DIR}/JitsiMeet.framework/JitsiMeet" "${OUTPUT_DIR}/Build/Products/Release-iphoneos/JitsiMeet.framework/JitsiMeet" "${OUTPUT_DIR}/Build/Products/Release-iphonesimulator/JitsiMeet.framework/JitsiMeet"
-# 8
-# Copy the Swift module mappings for the simulator into the
-# framework. The device mappings already exist from step 6.
-cp -r "${OUTPUT_DIR}/Build/Products/Release-iphonesimulator/JitsiMeet.framework/Modules/JitsiMeet.swiftmodule/" "${OUTPUT_DIR}/JitsiMeet.framework/Modules/JitsiMeet.swiftmodule"
-# 9
-# Embedded strip-framework.sh into the framework
-echo "${THIS_DIR}"
-cp -r "${THIS_DIR}/strip-framework.sh" "${OUTPUT_DIR}/JitsiMeet.framework"
-# 10
-# Copy JitsiMeet.framework.dSYM to output folder
-cp -r "${OUTPUT_DIR}/Build/Products/Release-iphoneos/JitsiMeet.framework.dSYM" "${OUTPUT_DIR}/JitsiMeet.framework.dSYM"
+# Fix swiftinterface https://bugs.swift.org/browse/SR-14195
+# Replace all JitsiMeet. with empty string
+sed -i '' 's/JitsiMeet.//g' "${OUTPUT_DIR}/JItsiMeet.xcframework/ios-arm64/JitsiMeet.framework/Modules/JitsiMeet.swiftmodule/arm64.swiftinterface"
+sed -i '' 's/JitsiMeet.//g' "${OUTPUT_DIR}/JItsiMeet.xcframework/ios-arm64/JitsiMeet.framework/Modules/JitsiMeet.swiftmodule/arm64-apple-ios.swiftinterface"
+sed -i '' 's/JitsiMeet.//g' "${OUTPUT_DIR}/JItsiMeet.xcframework/ios-x86_64-simulator/JitsiMeet.framework/Modules/JitsiMeet.swiftmodule/x86_64.swiftinterface"
+sed -i '' 's/JitsiMeet.//g' "${OUTPUT_DIR}/JItsiMeet.xcframework/ios-x86_64-simulator/JitsiMeet.framework/Modules/JitsiMeet.swiftmodule/x86_64-apple-ios-simulator.swiftinterface"
+
 # 11
-# Download WebRTC.dSYM
+# Download WebRTC.framework
 bash "${PROJECT_REPO}/node_modules/react-native-webrtc/tools/downloadBitcode.sh"
+
 # 12
-# Move WebRTC.framework/WebRTC.dSYM to output folder
-cp -r "${PROJECT_REPO}/node_modules/react-native-webrtc/ios/WebRTC.framework" "${OUTPUT_DIR}/WebRTC.framework"
-cp -r "${PROJECT_REPO}/node_modules/react-native-webrtc/ios/WebRTC.dSYM" "${OUTPUT_DIR}/WebRTC.dSYM"
+# Create WebRTC.xcframework
+mkdir "${OUTPUT_DIR}/WebRTC-iphoneos"
+mkdir "${OUTPUT_DIR}/WebRTC-iphonesimulator"
+cp -r "${PROJECT_REPO}/node_modules/react-native-webrtc/ios/WebRTC.framework" "${OUTPUT_DIR}/WebRTC-iphoneos/WebRTC.framework"
+cp -r "${PROJECT_REPO}/node_modules/react-native-webrtc/ios/WebRTC.framework" "${OUTPUT_DIR}/WebRTC-iphonesimulator/WebRTC.framework"
+
+xcrun lipo -remove i386 -remove x86_64 -remove armv7 "${OUTPUT_DIR}/WebRTC-iphoneos/WebRTC.framework/WebRTC" -o "${OUTPUT_DIR}/WebRTC-iphoneos/WebRTC.framework/WebRTC"
+xcrun lipo -remove i386 -remove arm64 -remove armv7 "${OUTPUT_DIR}/WebRTC-iphonesimulator/WebRTC.framework/WebRTC" -o "${OUTPUT_DIR}/WebRTC-iphonesimulator/WebRTC.framework/WebRTC"
+
+xcodebuild -create-xcframework -framework "${OUTPUT_DIR}/WebRTC-iphoneos/WebRTC.framework/" -framework "${OUTPUT_DIR}/WebRTC-iphonesimulator/WebRTC.framework" -output "${OUTPUT_DIR}/WebRTC.xcframework"
